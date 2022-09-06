@@ -9,8 +9,8 @@ from holidays_es import get_provinces, Province
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from bicimad_lewagon.data.encoding_pickle import transform_OHE, transform_standard, concatenate
-from bicimad_lewagon.data.registry import load_model
+from data.encoding_pickle import transform_OHE, transform_standard, concatenate
+from data.registry import load_model
 import mlflow
 import os
 from colorama import Fore, Style
@@ -98,8 +98,8 @@ holidays=[datetime.date(2018, 1, 1),
 
 # http://127.0.0.1:8000/predict?pickup_datetime=2012-10-06 12:10:20&pickup_longitude=40.7614327&pickup_latitude=-73.9798156&dropoff_longitude=40.6513111&dropoff_latitude=-73.8803331&passenger_count=2
 @app.get("/predict")
-def predict(date,#: datetime.date,  # 2013-07-06 17:18:00
-            time,#: datetime.time,    # -73.950655
+def predict(date: datetime.date,  # 2013-07-06 17:18:00
+            time: datetime.time,    # -73.950655
             name#: object,     # 40.783282
             ):      # 1
 
@@ -162,13 +162,12 @@ def predict(date,#: datetime.date,  # 2013-07-06 17:18:00
     model = app.state.model
 
     y_pred = model.predict(input_processed)
+    print('model_loaded_in_memory')
+    y_pred = model.predict(input_processed)
+    result={'number_bikes':str(y_pred[0][0])}
+    print('model_predicted')
 
-    # ⚠️ fastapi only accepts simple python data types as a return value
-    # among which dict, list, str, int, float, bool
-    # in order to be able to convert the api response to json
-    return y_pred
-
-    #dict(prediction=int(y_pred))
+    return result
 
 
 
